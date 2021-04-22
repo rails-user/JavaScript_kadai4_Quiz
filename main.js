@@ -1,40 +1,41 @@
+//正答数カウント用変数
+let count = 0;
+let i = 0;
+
 //開始ボタンクリック時の処理
-document.getElementById('btn0').onclick = function (){
+document.getElementById('btn0').onclick = function () {
 
     //待機画面の生成
     const h1 = document.getElementById('h1');
-    h1.textContent = ('取得中'); 
+    h1.textContent = ('取得中');
     const div3 = document.getElementById('div3');
-    div3.textContent = ('少々お待ち下さい'); 
+    div3.textContent = ('少々お待ち下さい');
     const btn0 = document.getElementById('btn0');
     btn0.remove();
 
     //APIよりデータ取得
     fetch('https://opentdb.com/api.php?amount=10')
 
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error();
-        }
-        return response.json();
-    })
-    .then((jsonObj) => {
-        //クイズの実行（引数：JSONオブジェクト）
-        exeQuiz(jsonObj);
-    })
-    .catch((error) => {
-        //エラー処理はあとで記述する予定
-    });
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error();
+            }
+            return response.json();
+        })
+        .then((jsonObj) => {
+            //クイズの実行（引数：JSONオブジェクト）
+            exeQuiz(jsonObj, i);
+        })
+        .catch((error) => {
+            //エラー処理はあとで記述する予定
+        });
 }
 
 //クイズの実行
-function exeQuiz(jsonObj){
+function exeQuiz(jsonObj, i) {
 
-    //正答数カウント用変数
-    let count = 0;
-    
-    //JSONオブジェクト（クイズ10問分）のループ処理
-    for (let i = 0; i < jsonObj.results.length; i++) {
+     //出題画面の出力（10問まで）
+    if (i < jsonObj.results.length) {
         //カテゴリー
         const category = jsonObj.results[i].category;
         //クイズの形式がmultipleかtrue/falseかを格納
@@ -48,8 +49,8 @@ function exeQuiz(jsonObj){
         //間違い
         const incorrect_answer = jsonObj.results[i].incorrect_answers;
 
-        //問題の生成
-        document.getElementById('h1').textContent = (`問題${i+1}`); 
+        //タイトルの生成
+        document.getElementById('h1').textContent = (`問題${i + 1}`);
         //ジャンル
         const div1 = document.getElementById('div1');
         div1.innerHTML = "";
@@ -66,12 +67,12 @@ function exeQuiz(jsonObj){
         const txt3 = document.createTextNode(`${question}`);
         div3.appendChild(txt3);
 
-        //クイズ画面の生成
+        //クイズ画面の生成（４択）
         if (type === 'multiple') {
-            
-            //正解と間違いを配列に格納
-            let buttonValue = [];
-            buttonValue.push(correct_answer,incorrect_answer[0],incorrect_answer[1],incorrect_answer[2]);
+
+            //解答を配列に格納
+            const buttonValue = incorrect_answer;
+            buttonValue.push(correct_answer);
 
             //解答ボタンの生成
             const div4 = document.getElementById('div4');
@@ -79,6 +80,7 @@ function exeQuiz(jsonObj){
             const btn1 = document.createElement('input');
             btn1.type = 'button';
             btn1.name = 'buttons';
+            btn1.id = 'btn1';
             btn1.value = `${buttonValue[0]}`;
             div4.appendChild(btn1);
 
@@ -87,6 +89,7 @@ function exeQuiz(jsonObj){
             const btn2 = document.createElement('input');
             btn2.type = 'button';
             btn2.name = 'buttons';
+            btn2.id = 'btn2';
             btn2.value = `${buttonValue[1]}`;
             div5.appendChild(btn2);
 
@@ -95,6 +98,7 @@ function exeQuiz(jsonObj){
             const btn3 = document.createElement('input');
             btn3.type = 'button';
             btn3.name = 'buttons';
+            btn3.id = 'btn3';
             btn3.value = `${buttonValue[2]}`;
             div6.appendChild(btn3);
 
@@ -103,12 +107,12 @@ function exeQuiz(jsonObj){
             const btn4 = document.createElement('input');
             btn4.type = 'button';
             btn4.name = 'buttons';
+            btn4.id = 'btn4';
             btn4.value = `${buttonValue[3]}`;
             div7.appendChild(btn4);
-            
         }
-        else if (type === 'boolean') 
-        {
+        //クイズ画面の生成（２択）
+        else if (type === 'boolean') {
 
             //解答ボタンの生成
             const div4 = document.getElementById('div4');
@@ -116,14 +120,16 @@ function exeQuiz(jsonObj){
             const btn1 = document.createElement('input');
             btn1.type = 'button';
             btn1.name = 'buttons';
+            btn1.id = 'btn1';
             btn1.value = `TRUE`;
             div4.appendChild(btn1);
-            
+
             const div5 = document.getElementById('div5');
             div5.innerHTML = "";
             const btn2 = document.createElement('input');
             btn2.type = 'button';
             btn2.name = 'buttons';
+            btn2.id = 'btn2';
             btn2.value = `FALSE`;
             div5.appendChild(btn2);
 
@@ -131,57 +137,58 @@ function exeQuiz(jsonObj){
             div6.innerHTML = "";
             const div7 = document.getElementById('div7');
             div7.innerHTML = "";
- 
+        }
+        //解答ボタンクリック時のイベントリスナー
+        document.getElementsByName('buttons').forEach(btn => btn.addEventListener('click', () => {
+        if (btn.value === correct_answer) {
+            count++;
+        }
+        i++;
+        exeQuiz(jsonObj, i)
+        }));
+    }
+    //採点画面へ
+    else {
+
+        //採点画面の生成
+        const h1 = document.getElementById('h1');
+        h1.textContent = (`あなたの正答数は${count}です!!`);
+
+        //ジャンルの削除
+        const div1 = document.getElementById('div1');
+        div1.innerHTML = "";
+        //難易度の削除
+        const div2 = document.getElementById('div2');
+        div2.innerHTML = "";
+        //メッセージの表示
+        const div3 = document.getElementById('div3')
+        div3.innerHTML = "";
+        const txt4 = document.createTextNode(`再度チャレンジしたい場合は以下をクリック!!`)
+        div3.appendChild(txt4);
+
+        const div4 = document.getElementById('div4');
+        div4.innerHTML = "";
+        const div5 = document.getElementById('div5');
+        div5.innerHTML = "";
+        const div6 = document.getElementById('div6');
+        div6.innerHTML = "";
+        const div7 = document.getElementById('div7');
+        div7.innerHTML = "";
+
+        //ボタンの生成
+        const btn5 = document.createElement('input');
+        btn5.type = 'button';
+        btn5.id = 'btn5';
+        btn5.name = 'backBtn';
+        btn5.value = `ホームに戻る`;
+        div4.appendChild(btn5);
+
+        //ホームに戻るボタンクリック時の処理（リロードしてTOP画面を表示する）
+        document.getElementById('btn5').onclick = function () {
+            location.reload();
         }
 
-        //解答ボタンクリック時のイベントリスナー
-        const buttons = document.getElementsByName('buttons');
-        buttons.forEach(btn => btn.addEventListener('click', () => {
-        if (btn.value === correct_answer){
-            count++;
-        }}));
-    };
-
-    //採点画面の生成
-    const h1 = document.getElementById('h1');
-    h1.textContent = (`あなたの正答数は${count}です!!`); 
-
-    //ジャンルの削除
-    const div1 = document.getElementById('div1');
-    div1.innerHTML = "";
-    //難易度の削除
-    const div2 = document.getElementById('div2');
-    div2.innerHTML = "";
-    //メッセージの表示
-    const div3 = document.getElementById('div3')
-    div3.innerHTML = "";
-    const txt4 = document.createTextNode(`再度チャレンジしたい場合は以下をクリック!!`)
-    div3.appendChild(txt4);
-
-    const div4 = document.getElementById('div4');
-    div4.innerHTML = "";
-    const div5 = document.getElementById('div5');
-    div5.innerHTML = "";
-    const div6 = document.getElementById('div6');
-    div6.innerHTML = "";
-    const div7 = document.getElementById('div7');
-    div7.innerHTML = "";
-
-    //ボタンの生成
-    const btn5 = document.createElement('input');
-    btn5.type = 'button';
-    btn5.id = 'btn5';
-    btn5.name = 'backBtn';
-    btn5.value = `ホームに戻る`;
-    div4.appendChild(btn5);
-
+    }
 }
 
-//ホームに戻るボタンクリック時の処理（リロードしてTOP画面を表示する）
-document.getElementById('btn5').onclick = function(){
-    location.reload();
-}
-
-
-  
 
