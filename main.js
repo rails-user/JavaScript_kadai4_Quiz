@@ -71,8 +71,11 @@ function exeQuiz(jsonObj, i) {
         if (type === 'multiple') {
 
             //解答を配列に格納
-            const buttonValue = incorrect_answer;
+            let buttonValue = incorrect_answer;
             buttonValue.push(correct_answer);
+            alert(buttonValue);
+            buttonValue = arrayShuffle(buttonValue);
+            alert(buttonValue);
 
             //解答ボタンの生成
             const div4 = document.getElementById('div4');
@@ -190,5 +193,11 @@ function exeQuiz(jsonObj, i) {
 
     }
 }
-
-
+//配列のランダムソート関数
+const arrayShuffle = ([...array]) => {
+    for (let i = array.length - 1; i >= 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
