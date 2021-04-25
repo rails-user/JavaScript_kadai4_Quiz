@@ -1,5 +1,6 @@
 //正答数カウント用変数
 let count = 0;
+//テストデータ参照用のインデックス
 let i = 0;
 
 //開始ボタンクリック時の処理
@@ -73,9 +74,7 @@ function exeQuiz(jsonObj, i) {
             //解答を配列に格納
             let buttonValue = incorrect_answer;
             buttonValue.push(correct_answer);
-            alert(buttonValue);
             buttonValue = arrayShuffle(buttonValue);
-            alert(buttonValue);
 
             //解答ボタンの生成
             const div4 = document.getElementById('div4');
@@ -192,7 +191,7 @@ function exeQuiz(jsonObj, i) {
         }
 
     }
-}
+} 
 //配列のランダムソート関数
 const arrayShuffle = ([...array]) => {
     for (let i = array.length - 1; i >= 0; i--) {
@@ -201,3 +200,4 @@ const arrayShuffle = ([...array]) => {
     }
     return array;
   }
+
