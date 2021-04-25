@@ -24,11 +24,11 @@ document.getElementById('btn0').onclick = function () {
             return response.json();
         })
         .then((jsonObj) => {
-            //クイズの実行（引数：JSONオブジェクト）
+            //クイズの実行（引数：JSONオブジェクト、問題のインデックス）
             exeQuiz(jsonObj, i);
         })
         .catch((error) => {
-            //エラー処理はあとで記述する予定
+            console.log(error);
         });
 }
 
