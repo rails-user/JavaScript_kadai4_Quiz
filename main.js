@@ -24,8 +24,10 @@ document.getElementById('btn0').onclick = function () {
             return response.json();
         })
         .then((jsonObj) => {
+            //quizインスタンスの生成
+            const quiz = new Quiz(jsonObj); 
             //クイズの実行（引数：JSONオブジェクト、問題のインデックス）
-            exeQuiz(jsonObj, i);
+            exeQuiz(quiz, i);
         })
         .catch((error) => {
             console.log(error);
@@ -33,22 +35,21 @@ document.getElementById('btn0').onclick = function () {
 }
 
 //クイズの実行
-function exeQuiz(jsonObj, i) {
-
+function exeQuiz(quiz, i) {
      //出題画面の出力（10問まで）
-    if (i < jsonObj.results.length) {
+    if (i < quiz.getLength()) {
         //カテゴリー
-        const category = jsonObj.results[i].category;
+        const category = quiz.getCategory(i);
         //クイズの形式がmultipleかtrue/falseかを格納
-        const type = jsonObj.results[i].type;
+        const type = quiz.getType(i);
         //難易度
-        const difficulty = jsonObj.results[i].difficulty;
+        const difficulty = quiz.getDifficulty(i);
         //問題
-        const question = jsonObj.results[i].question;
+        const question = quiz.getQuestion(i);
         //正解
-        const correct_answer = jsonObj.results[i].correct_answer;
+        const correct_answer = quiz.getCorrectAnswer(i);
         //間違い
-        const incorrect_answer = jsonObj.results[i].incorrect_answers;
+        const incorrect_answer = quiz.getIncorrectAnswer(i);
 
         //タイトルの生成
         document.getElementById('h1').textContent = (`問題${i + 1}`);
@@ -146,7 +147,7 @@ function exeQuiz(jsonObj, i) {
             count++;
         }
         i++;
-        exeQuiz(jsonObj, i)
+        exeQuiz(quiz, i)
         }));
     }
     //採点画面へ
@@ -201,3 +202,37 @@ const arrayShuffle = ([...array]) => {
     return array;
   }
 
+  //Quizクラス
+class Quiz {
+    constructor(jsonObj) {
+        this._quizChild = jsonObj.results;
+    }
+    //全クイズ数
+	getLength() {
+        return this._quizChild.length;
+    }
+    //カテゴリー
+	getCategory(i) {
+        return this._quizChild[i].category;
+     }
+    //クイズの形式がmultipleかtrue/falseかを格納
+	getType(i) {
+        return this._quizChild[i].type;
+     }
+     //難易度
+     getDifficulty(i) {
+        return this._quizChild[i].difficulty;
+     }
+    //問題
+    getQuestion(i) {
+        return this._quizChild[i].question;
+    }
+    //正解
+    getCorrectAnswer(i) {
+        return this._quizChild[i].correct_answer;
+    }
+    //間違い
+    getIncorrectAnswer(i) {
+        return this._quizChild[i].incorrect_answers;
+    }
+}
